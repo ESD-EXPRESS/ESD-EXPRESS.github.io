@@ -165,11 +165,10 @@ function createBuildingMarker(building) {
             highlightedCategory = part.category;
             updateMarkers();
             
-            const buildingName = `Павильон ${building.number}`;
+            const buildingNumber = building.number;
             const zone = categoryData.zone || '';
             const tooltip = `<div class="tooltip-content">
-                <div class="tooltip-header">${buildingName}</div>
-                ${zone ? `<div class="tooltip-zone">${zone}</div>` : ''}
+                <div class="tooltip-header">${zone} ${buildingNumber}</div>
                 <div class="tooltip-category">${categoryData.name}</div>
             </div>`;
             
@@ -322,14 +321,11 @@ function updateMarkers() {
             const color = categoryData.color;
             const lighterBorder = adjustBrightness(color, 1.3);
             
-            // Проверяем, является ли это кликнутым прямоугольником
-            const isClickedRect = clickedRectangle === rectangle;
-            
             if (highlightedCategory && partData.category === highlightedCategory) {
                 // Объекты выделенной категории
                 rectangle.setStyle({
                     color: lighterBorder,
-                    weight: isClickedRect ? 6 : 2, // Только у кликнутого очень толстая граница
+                    weight: 2, // Одинаковая граница для всех выделенных объектов
                     fillColor: color,
                     fillOpacity: 1,
                     opacity: 1 // Граница полностью непрозрачная
@@ -358,12 +354,38 @@ function updateMarkers() {
 }
 
 function updateSidebarSelection(category) {
+    const sidebar = document.querySelector('.sidebar');
+    let activeItem = null;
+    
     document.querySelectorAll('.category-item').forEach(item => {
         item.classList.remove('active');
         if (category && item.dataset.category === category) {
             item.classList.add('active');
+            activeItem = item;
         }
     });
+    
+    // Прокручиваем к активной категории, чтобы она была в центре списка
+    if (activeItem && sidebar) {
+        // Получаем высоту видимой области sidebar
+        const sidebarHeight = sidebar.clientHeight;
+        
+        // Получаем текущую позицию прокрутки
+        const currentScroll = sidebar.scrollTop;
+        
+        // Получаем позицию элемента относительно начала sidebar (включая tabs-sidebar)
+        const itemTop = activeItem.offsetTop;
+        const itemHeight = activeItem.offsetHeight;
+        
+        // Вычисляем позицию, чтобы элемент был в центре
+        const targetScroll = itemTop - (sidebarHeight / 2) + (itemHeight / 2);
+        
+        // Плавная прокрутка
+        sidebar.scrollTo({
+            top: targetScroll,
+            behavior: 'smooth'
+        });
+    }
 }
 
 // ============================================================================
