@@ -74,9 +74,16 @@ function initMap() {
 
     // Установка начального вида
     map.fitBounds(bounds);
+    
+    // Устанавливаем разумные ограничения для прокрутки
+    // Даем немного пространства со всех сторон, особенно снизу для мобильных
+    const bottomPadding = isMobile ? 300 : 150; // Больше места снизу для мобильных
+    const topPadding = 100;
+    const sidePadding = 150;
+    
     map.setMaxBounds([
-        [-50, -50],
-        [MAP_HEIGHT + 50, MAP_WIDTH + 50]
+        [-topPadding, -sidePadding],
+        [MAP_HEIGHT + bottomPadding, MAP_WIDTH + sidePadding]
     ]);
     
     // Обработчик клика на пустое место карты для снятия выделения
